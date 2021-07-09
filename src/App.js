@@ -1,23 +1,27 @@
-import logo from './logo.svg';
+import React  from 'react';
+import { useState } from 'react';
 import './App.css';
+import Quiz from './Quiz.js';
+import SelectQuizDropDown from './SelectQuizDropDown';
 
 function App() {
+  const selectedquiz = 1
+
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
+      <nav className="NavBar">
+        <p className="HeaderText">
+            Soccer Trivia!
         </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      </nav>
+      <nav className="smallerNav">
+        <SelectQuizDropDown/>
+        <p className="smallertext">
+          Select a Quiz
+        </p>
+      </nav>
+      <Quiz selectedquiz={selectedquiz} />
     </div>
   );
 }
