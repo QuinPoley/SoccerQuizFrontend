@@ -1,3 +1,4 @@
-# Frontend to SoccerQuiz
 
-Making a simple webapp
+# Frontend for Soccer Quizing API
+  Hooks up to a python flask api
+
