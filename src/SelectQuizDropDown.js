@@ -1,23 +1,16 @@
-import { makeStyles } from "@material-ui/core";
+import React, { useState } from 'react';
 
-const useStyles = makeStyles((theme) => ({
-    formControl: {
-      margin: theme.spacing(1),
-      minWidth: 120,
-    },
-    selectEmpty: {
-      marginTop: theme.spacing(2),
-    },
-  }));
-
-function SelectQuizDropDown(){
-    const classes = useStyles();
-    const age = 0;
-    const handleChange = (event) => {
-        console.log("")
-      };
+function SelectQuizDropDown(props){
+  const [open, setOpen] = useState(false)
     return(
-        <></>
+        <div className="dropdownbutton" onClick={() => setOpen(!open)}>
+          <div className="button">
+            Select Quiz
+            <span className="icon">{props.icon}</span>
+          </div>
+          {open && props.children}
+        </div>
+
     )
 }
 export default SelectQuizDropDown;
