@@ -1,4 +1,4 @@
-import './Quiz.css'
+
 import QuestionList from './QuestionList';
 import React, { useState, useEffect } from 'react';
 //<QuestionList questions={selectedquiz}/>
