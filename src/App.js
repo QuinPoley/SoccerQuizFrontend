@@ -12,30 +12,30 @@ function getQuiz(quiz){
 }
 
 function makeApiCall(selectedquiz){
-  //const thequiz = JSON.parse(quiz);
-  /*<ul>
-                        {valuesArray.map(item => {
-                            return <li>{item}</li>;
-                        })}
-  </ul>
-  
-  <div>
-          You have selected {selectedquiz}
-  </div>*/
   return (
         <ul className="questionlist">
             {quiz.map(item => {
                 return(
-                <li>
-                  <div className="quest">{item.text}</div>
-                    <input type="radio" id={item.text + item.A} name={item.text} value={item.A}/>
-                    <label for={item.text + item.A}>{item.A}</label><br/>
-                    <input type="radio" id={item.text + item.B} name={item.text} value={item.A}/>
-                    <label for={item.text + item.B}>{item.B}</label><br/>
-                    <input type="radio" id={item.text + item.C} name={item.text} value={item.A}/>
-                    <label for={item.text + item.C}>{item.C}</label><br/>
-                    <input type="radio" id={item.text + item.D} name={item.text} value={item.A}/>
-                    <label for={item.text + item.D}>{item.D}</label>
+                <li className="quest">
+                  <div>{item.text}</div>
+                  <div className="alignanswers">
+                    <div className="AnswerA">
+                      <input type="radio" id={item.text + item.A} name={item.text} value={item.A}/>
+                      <label for={item.text + item.A}>{item.A}</label><br/>
+                    </div>
+                    <div className="AnswerB">
+                      <input type="radio" id={item.text + item.B} name={item.text} value={item.A}/>
+                      <label for={item.text + item.B}>{item.B}</label><br/>
+                    </div>
+                    <div className="AnswerC">
+                      <input type="radio" id={item.text + item.C} name={item.text} value={item.A}/>
+                      <label for={item.text + item.C}>{item.C}</label><br/>
+                    </div>
+                    <div className="AnswerD">
+                      <input type="radio" id={item.text + item.D} name={item.text} value={item.A}/>
+                      <label for={item.text + item.D}>{item.D}</label>
+                    </div>
+                  </div>
                   <p/>
                 </li>
                 );
@@ -43,7 +43,13 @@ function makeApiCall(selectedquiz){
         </ul>
       );
 }
-function getQuizResult(){
+function getQuizResult(isgraded, setgraded){
+  if(isgraded){
+    return
+  }
+  else{
+    setgraded(true)
+  }
   for (let i = 0; i < quiz.length; i++) {
     var elem = document.getElementsByName(quiz[i].text);
     for (let j = 0; j < elem.length; j++) {
@@ -57,13 +63,12 @@ function getQuizResult(){
   // Do another API call to get answers
 }
 
-function Quiz({selectedquiz}) {
+function Quiz({selectedquiz, isgraded, setgraded}) {
   const response = makeApiCall(selectedquiz)
   return (
     <div className="questions">
         {response}
-        <div className="submit" onClick={() => getQuizResult()}>Submit</div>
-        <div className="result" id="putresulthere"></div>
+        <div className="submit" onClick={() => getQuizResult(isgraded, setgraded)}>Submit</div>
     </div>
   );
 }
@@ -78,13 +83,13 @@ function MakeQuizButton(){
     <div className="makequiz">Make Quiz</div>
   );
 }
-//dummycall.bind(this, index)
-function dummycall(currentelement){
+
+function handleNewQuiz(currentelement){
   console.log("Hello from "+currentelement);
 }
 
-function DropDownList({quizzes, setactive, active}){
-  var map1 = quizzes.map(function(currentelement, index){return(<li key={index} onClick={() => setactive(currentelement)}>{currentelement}</li>)});
+function DropDownList({quizzes, setactive, active, setgraded}){
+  var map1 = quizzes.map(function(currentelement, index){return(<li key={index} onClick={() => setactive(currentelement) && setgraded(false)}>{currentelement}</li>)});
   return(
     <div className="quizselection">
       <ul className="droplist">
@@ -98,6 +103,7 @@ function DropDownList({quizzes, setactive, active}){
 function App() {
   var quizlist = fetchQuizzes();
   const [getQuiz, doOpposite] = useState(true);
+  const [isgraded, setgraded] = useState(false);
   const [active, setactive] = useState(quizlist[0]);
   console.log(active);
   return (
@@ -110,12 +116,14 @@ function App() {
         </nav>
         <nav className="smallerNav">
           <SelectQuizDropDown icon={<Caret />}>
-            <DropDownList quizzes={quizlist} setactive={setactive} active={active}></DropDownList>
+            <DropDownList quizzes={quizlist} setactive={setactive} active={active} setgraded={setgraded} isgraded={isgraded}></DropDownList>
           </SelectQuizDropDown>
           <MakeQuizButton></MakeQuizButton>
+          <div className="currentlyselected">{active}</div>
+          <div className="result" id="putresulthere"></div>
         </nav>
         <div className="quizcontainer">
-          <Quiz selectedquiz={active} />
+          <Quiz selectedquiz={active} isgraded={isgraded} setgraded={setgraded}/>
         </div>
       </div>
     </div>
