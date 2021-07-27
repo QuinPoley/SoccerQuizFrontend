@@ -74,9 +74,20 @@ function Quiz({selectedquiz, isgraded, setgraded}) {
 }
 
 
-function fetchQuizzes(){
-  return (["Quiz 1", "Quiz 2", "Quiz 3", "Quiz 4", "Quiz 5"]);
+const fetchQuizzes = async (setquizlist) =>{
+  async function getList(){
+    const data = await fetch('http://localhost:8000/quizzes')
+  .then(response => {return response.json();})
+  .catch(error => {console.error(error);});
+  return data
 }
+  let quizzes = await getList()
+  for(let i = 0; i < quizzes.length; i++){
+      console.log(quizzes[i]);
+  }
+}
+  
+
 
 function MakeQuizButton(){
   return(
@@ -101,11 +112,17 @@ function DropDownList({quizzes, setactive, active, setgraded}){
 
 //<div className="quizselection">Quizzes</div>
 function App() {
-  var quizlist = fetchQuizzes();
+  const [quizlist, setquizlist] = useState(null);
+  useEffect(() => {
+    if (quizlist == null){
+      fetchQuizzes(setquizlist);
+    }
+}, []);
   const [getQuiz, doOpposite] = useState(true);
   const [isgraded, setgraded] = useState(false);
-  const [active, setactive] = useState(quizlist[0]);
-  console.log(active);
+  const [active, setactive] = useState(null); //quizlist[0]
+  
+  console.log(quizlist);
   return (
     <div className="App">
       <div className="container">
