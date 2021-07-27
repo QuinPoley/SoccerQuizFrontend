@@ -6,12 +6,26 @@ import {  ReactComponent as Caret } from './Icons/caret.svg';
 import { quiz } from './quiz.json';
 import { func } from 'prop-types';
 
-
-function getQuiz(quiz){
-  return(null);
+const getQuiz = async (selectedquiz) =>{
+  async function getQuestions(){
+    const data = await fetch('http://localhost:8000/quiz/'+selectedquiz)
+  .then(response => {return response.json();})
+  .catch(error => {console.error(error);});
+  return data
+}
+  console.log('http://localhost:8000/quiz/'+selectedquiz);
+  var returnlist = [];
+  let quizzes = await getQuestions()
+  //let jsonquiz = JSON.parse(quizzes);
+  console.log(quizzes);
+  /*for(let i = 0; i < jsonquiz.length; i++){
+      returnlist[i] = (jsonquiz[i].name);
+  }
+  return returnlist;*/
 }
 
 function makeApiCall(selectedquiz){
+  getQuiz(selectedquiz);
   return (
         <ul className="questionlist">
             {quiz.map(item => {
@@ -64,7 +78,7 @@ function getQuizResult(isgraded, setgraded){
 }
 
 function Quiz({selectedquiz, isgraded, setgraded}) {
-  const response = makeApiCall(selectedquiz)
+  const response = makeApiCall(selectedquiz);
   return (
     <div className="questions">
         {response}
@@ -81,10 +95,13 @@ const fetchQuizzes = async (setquizlist) =>{
   .catch(error => {console.error(error);});
   return data
 }
+  var returnlist = [];
   let quizzes = await getList()
-  for(let i = 0; i < quizzes.length; i++){
-      console.log(quizzes[i]);
+  let jsonquiz = JSON.parse(quizzes);
+  for(let i = 0; i < jsonquiz.length; i++){
+      returnlist[i] = (jsonquiz[i].name);
   }
+  setquizlist(returnlist);
 }
   
 
@@ -118,11 +135,16 @@ function App() {
       fetchQuizzes(setquizlist);
     }
 }, []);
-  const [getQuiz, doOpposite] = useState(true);
-  const [isgraded, setgraded] = useState(false);
-  const [active, setactive] = useState(null); //quizlist[0]
+const [isgraded, setgraded] = useState(false);
+const [active, setactive] = useState(null); //quizlist[0]
+useEffect(() => {
+  if(isgraded){
+    setgraded(false);
+    document.getElementById("putresulthere").firstChild.remove()
+  }
+}, [active]);
   
-  console.log(quizlist);
+  
   return (
     <div className="App">
       <div className="container">
