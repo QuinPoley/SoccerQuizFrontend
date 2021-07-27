@@ -1,4 +1,4 @@
 
 # Frontend for Soccer Quizing API
-  Hooks up to a python flask api
+ Frontend to soccerquiz app I created. Uses a Fastapi backend that can be found @ QuinPoley/SoccerQuizBackend
 
