@@ -3,10 +3,10 @@ import { useState, useEffect } from 'react';
 import './App.css';
 import SelectQuizDropDown from './SelectQuizDropDown';
 import {  ReactComponent as Caret } from './Icons/caret.svg';
-import { quiz } from './quiz.json';
-import { func } from 'prop-types';
+//import { quiz } from './quiz.json';
 
-const getQuiz = async (selectedquiz) =>{
+
+const getQuiz = async (selectedquiz, setquiz) =>{
   async function getQuestions(){
     const data = await fetch('http://localhost:8000/quiz/'+selectedquiz)
   .then(response => {return response.json();})
@@ -17,52 +17,65 @@ const getQuiz = async (selectedquiz) =>{
   var returnlist = [];
   let quizzes = await getQuestions()
   //let jsonquiz = JSON.parse(quizzes);
-  console.log(quizzes);
+  setquiz(quizzes);
   /*for(let i = 0; i < jsonquiz.length; i++){
       returnlist[i] = (jsonquiz[i].name);
   }
   return returnlist;*/
 }
 
-function makeApiCall(selectedquiz){
-  getQuiz(selectedquiz);
-  return (
-        <ul className="questionlist">
-            {quiz.map(item => {
-                return(
-                <li className="quest">
-                  <div>{item.text}</div>
-                  <div className="alignanswers">
-                    <div className="AnswerA">
-                      <input type="radio" id={item.text + item.A} name={item.text} value={item.A}/>
-                      <label for={item.text + item.A}>{item.A}</label><br/>
+function makeApiCall(selectedquiz, quiz, setquiz){
+  getQuiz(selectedquiz, setquiz);
+  console.log("HEY THERE "+quiz);
+  if(quiz != null){
+    let jsonquiz = JSON.parse(quiz);
+    console.log(jsonquiz);
+    return (
+          <ul className="questionlist">
+              {jsonquiz.quiz.map(item => {
+                  return(
+                  <li className="quest">
+                    <div>{item.text}</div>
+                    <div className="alignanswers">
+                      <div className="AnswerA">
+                        <input type="radio" id={item.text + item.A} name={item.text} value={item.A}/>
+                        <label for={item.text + item.A}>{item.A}</label><br/>
+                      </div>
+                      <div className="AnswerB">
+                        <input type="radio" id={item.text + item.B} name={item.text} value={item.A}/>
+                        <label for={item.text + item.B}>{item.B}</label><br/>
+                      </div>
+                      <div className="AnswerC">
+                        <input type="radio" id={item.text + item.C} name={item.text} value={item.A}/>
+                        <label for={item.text + item.C}>{item.C}</label><br/>
+                      </div>
+                      <div className="AnswerD">
+                        <input type="radio" id={item.text + item.D} name={item.text} value={item.A}/>
+                        <label for={item.text + item.D}>{item.D}</label>
+                      </div>
                     </div>
-                    <div className="AnswerB">
-                      <input type="radio" id={item.text + item.B} name={item.text} value={item.A}/>
-                      <label for={item.text + item.B}>{item.B}</label><br/>
-                    </div>
-                    <div className="AnswerC">
-                      <input type="radio" id={item.text + item.C} name={item.text} value={item.A}/>
-                      <label for={item.text + item.C}>{item.C}</label><br/>
-                    </div>
-                    <div className="AnswerD">
-                      <input type="radio" id={item.text + item.D} name={item.text} value={item.A}/>
-                      <label for={item.text + item.D}>{item.D}</label>
-                    </div>
-                  </div>
-                  <p/>
-                </li>
-                );
-            })}
-        </ul>
-      );
+                    <p/>
+                  </li>
+                  );
+              })}
+          </ul>
+        );
+    }
+    else{
+      return(
+      <div className="quest">SELECT A QUIZ</div>
+        );
+    }
 }
-function getQuizResult(isgraded, setgraded){
+function getQuizResult(isgraded, setgraded, quiz){
   if(isgraded){
     return
   }
   else{
     setgraded(true)
+  }
+  if(quiz == null){
+    return
   }
   for (let i = 0; i < quiz.length; i++) {
     var elem = document.getElementsByName(quiz[i].text);
@@ -77,12 +90,12 @@ function getQuizResult(isgraded, setgraded){
   // Do another API call to get answers
 }
 
-function Quiz({selectedquiz, isgraded, setgraded}) {
-  const response = makeApiCall(selectedquiz);
+function Quiz({selectedquiz, isgraded, setgraded, quiz, setquiz}) {
+  const response = makeApiCall(selectedquiz, quiz, setquiz);
   return (
     <div className="questions">
         {response}
-        <div className="submit" onClick={() => getQuizResult(isgraded, setgraded)}>Submit</div>
+        <div className="submit" onClick={() => getQuizResult(isgraded, setgraded, quiz)}>Submit</div>
     </div>
   );
 }
@@ -130,6 +143,7 @@ function DropDownList({quizzes, setactive, active, setgraded}){
 //<div className="quizselection">Quizzes</div>
 function App() {
   const [quizlist, setquizlist] = useState(null);
+  const [quiz, setquiz] = useState(null);
   useEffect(() => {
     if (quizlist == null){
       fetchQuizzes(setquizlist);
@@ -162,7 +176,7 @@ useEffect(() => {
           <div className="result" id="putresulthere"></div>
         </nav>
         <div className="quizcontainer">
-          <Quiz selectedquiz={active} isgraded={isgraded} setgraded={setgraded}/>
+          <Quiz selectedquiz={active} isgraded={isgraded} setgraded={setgraded} quiz={quiz} setquiz={setquiz}/>
         </div>
       </div>
     </div>
