@@ -29,7 +29,7 @@ function makeApiCall(selectedquiz, quiz, setquiz){
   console.log("HEY THERE "+quiz);
   if(quiz != null){
     let jsonquiz = JSON.parse(quiz);
-    console.log(jsonquiz);
+    if(jsonquiz.quiz.length == 0){return(<div className="quest">SELECT A QUIZ</div>);}
     return (
           <ul className="questionlist">
               {jsonquiz.quiz.map(item => {
