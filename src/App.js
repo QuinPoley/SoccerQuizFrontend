@@ -67,7 +67,28 @@ function makeApiCall(selectedquiz, quiz, setquiz){
         );
     }
 }
-function getQuizResult(isgraded, setgraded, quiz){
+
+const gradeQuiz = async (quiz) =>{
+  async function postanswers(quiz){
+    const answer = {"responses" : "Red, Blue, Orange, Blue, Orange"}
+    let data = fetch('http://localhost:8000/quiz/grade/'+quiz, 
+    {method: 'POST',
+    headers:{'Content-Type': 'application/json'},
+    body: JSON.stringify(answer)
+    }
+  );
+    return data;
+}
+  var returnlist = [];
+  let quizzes = await postanswers(quiz)
+  console.log(quizzes);
+  /*let jsonquiz = JSON.parse(quizzes);
+  for(let i = 0; i < jsonquiz.length; i++){
+      returnlist[i] = (jsonquiz[i].name);
+  }*/
+}
+
+function getQuizResult(isgraded, setgraded, quiz, selectedquiz){
   if(isgraded){
     return
   }
@@ -85,7 +106,7 @@ function getQuizResult(isgraded, setgraded, quiz){
       }
     }
   }
-  
+  gradeQuiz(selectedquiz);
   document.getElementById("putresulthere").append("10/10 GREAT WORK");
   // Do another API call to get answers
 }
@@ -95,7 +116,7 @@ function Quiz({selectedquiz, isgraded, setgraded, quiz, setquiz}) {
   return (
     <div className="questions">
         {response}
-        <div className="submit" onClick={() => getQuizResult(isgraded, setgraded, quiz)}>Submit</div>
+        <div className="submit" onClick={() => getQuizResult(isgraded, setgraded, quiz, selectedquiz)}>Submit</div>
     </div>
   );
 }
