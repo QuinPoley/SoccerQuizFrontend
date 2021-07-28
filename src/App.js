@@ -68,32 +68,28 @@ function makeApiCall(selectedquiz, quiz, setquiz){
     }
 }
 
-const gradeQuiz = async (quiz) =>{
+const gradeQuiz = async (quiz, setgrade) =>{
   async function postanswers(quiz){
     const answer = {"responses" : "Red, Blue, Orange, Blue, Orange"}
-    let data = fetch('http://localhost:8000/quiz/grade/'+quiz, 
-    {method: 'POST',
-    headers:{'Content-Type': 'application/json'},
-    body: JSON.stringify(answer)
-    }
-  );
+    let data = await fetch('http://localhost:8000/quiz/grade/'+quiz, {method: 'POST', headers:{'Content-Type': 'application/json'}, body: JSON.stringify(answer)})
+    .then(response => {return response.json();})
+    .catch(error => {console.error(error);});
+    console.log(data);
     return data;
 }
   var returnlist = [];
   let quizzes = await postanswers(quiz)
   console.log(quizzes);
+  setgrade(quizzes.score);
   /*let jsonquiz = JSON.parse(quizzes);
   for(let i = 0; i < jsonquiz.length; i++){
       returnlist[i] = (jsonquiz[i].name);
   }*/
 }
 
-function getQuizResult(isgraded, setgraded, quiz, selectedquiz){
+function getQuizResult(isgraded, setgraded, quiz, selectedquiz, grade, setgrade){
   if(isgraded){
     return
-  }
-  else{
-    setgraded(true)
   }
   if(quiz == null){
     return
@@ -106,17 +102,18 @@ function getQuizResult(isgraded, setgraded, quiz, selectedquiz){
       }
     }
   }
-  gradeQuiz(selectedquiz);
-  document.getElementById("putresulthere").append("10/10 GREAT WORK");
+  gradeQuiz(selectedquiz, setgrade);
+  document.getElementById("putresulthere").append("Score: "+grade+" %");
+  setgraded(true);
   // Do another API call to get answers
 }
 
-function Quiz({selectedquiz, isgraded, setgraded, quiz, setquiz}) {
+function Quiz({selectedquiz, isgraded, setgraded, quiz, setquiz, grade, setgrade}) {
   const response = makeApiCall(selectedquiz, quiz, setquiz);
   return (
     <div className="questions">
         {response}
-        <div className="submit" onClick={() => getQuizResult(isgraded, setgraded, quiz, selectedquiz)}>Submit</div>
+        <div className="submit" onClick={() => getQuizResult(isgraded, setgraded, quiz, selectedquiz, grade, setgrade)}>Submit</div>
     </div>
   );
 }
@@ -171,6 +168,7 @@ function App() {
     }
 }, []);
 const [isgraded, setgraded] = useState(false);
+const [grade, setgrade] = useState(0);
 const [active, setactive] = useState(null); //quizlist[0]
 useEffect(() => {
   if(isgraded){
@@ -193,11 +191,11 @@ useEffect(() => {
             <DropDownList quizzes={quizlist} setactive={setactive} active={active} setgraded={setgraded} isgraded={isgraded}></DropDownList>
           </SelectQuizDropDown>
           <MakeQuizButton></MakeQuizButton>
-          <div className="currentlyselected">{active}</div>
-          <div className="result" id="putresulthere"></div>
         </nav>
         <div className="quizcontainer">
-          <Quiz selectedquiz={active} isgraded={isgraded} setgraded={setgraded} quiz={quiz} setquiz={setquiz}/>
+          <Quiz selectedquiz={active} isgraded={isgraded} setgraded={setgraded} quiz={quiz} setquiz={setquiz} grade={grade} setgrade={setgrade}/>
+          <div className="result" id="putresulthere"></div>
+          <div className="currentlyselected">{active}</div>
         </div>
       </div>
     </div>
