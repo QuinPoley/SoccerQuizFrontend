@@ -81,10 +81,6 @@ const gradeQuiz = async (quiz, setgrade) =>{
   let quizzes = await postanswers(quiz)
   console.log(quizzes);
   setgrade(quizzes.score);
-  /*let jsonquiz = JSON.parse(quizzes);
-  for(let i = 0; i < jsonquiz.length; i++){
-      returnlist[i] = (jsonquiz[i].name);
-  }*/
 }
 
 function getQuizResult(isgraded, setgraded, quiz, selectedquiz, grade, setgrade){
@@ -168,7 +164,7 @@ function App() {
     }
 }, []);
 const [isgraded, setgraded] = useState(false);
-const [grade, setgrade] = useState(0);
+const [grade, setgrade] = useState('0');
 const [active, setactive] = useState(null); //quizlist[0]
 useEffect(() => {
   if(isgraded){
