@@ -81,7 +81,7 @@ const gradeQuiz = async (quiz, setgrade, quizresponse) =>{
 
 function getQuizResult(isgraded, setgraded, quiz, selectedquiz, grade, setgrade){
   if(isgraded){
-    return
+    document.getElementById("putresulthere").firstChild.remove();
   }
   if(quiz == null){
     return
