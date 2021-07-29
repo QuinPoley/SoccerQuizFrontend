@@ -13,8 +13,6 @@ const getQuiz = async (selectedquiz, setquiz) =>{
   .catch(error => {console.error(error);});
   return data
 }
-  console.log('http://localhost:8000/quiz/'+selectedquiz);
-  var returnlist = [];
   let quizzes = await getQuestions()
   //let jsonquiz = JSON.parse(quizzes);
   setquiz(quizzes);
@@ -26,10 +24,9 @@ const getQuiz = async (selectedquiz, setquiz) =>{
 
 function makeApiCall(selectedquiz, quiz, setquiz){
   getQuiz(selectedquiz, setquiz);
-  console.log("HEY THERE "+quiz);
   if(quiz != null){
     let jsonquiz = JSON.parse(quiz);
-    if(jsonquiz.quiz.length == 0){return(<div className="quest">SELECT A QUIZ</div>);}
+    if(jsonquiz.quiz.length === 0){return(<div className="quest">SELECT A QUIZ</div>);}
     return (
           <ul className="questionlist">
               {jsonquiz.quiz.map(item => {
@@ -42,15 +39,15 @@ function makeApiCall(selectedquiz, quiz, setquiz){
                         <label for={item.text + item.A}>{item.A}</label><br/>
                       </div>
                       <div className="AnswerB">
-                        <input type="radio" id={item.text + item.B} name={item.text} value={item.A}/>
+                        <input type="radio" id={item.text + item.B} name={item.text} value={item.B}/>
                         <label for={item.text + item.B}>{item.B}</label><br/>
                       </div>
                       <div className="AnswerC">
-                        <input type="radio" id={item.text + item.C} name={item.text} value={item.A}/>
+                        <input type="radio" id={item.text + item.C} name={item.text} value={item.C}/>
                         <label for={item.text + item.C}>{item.C}</label><br/>
                       </div>
                       <div className="AnswerD">
-                        <input type="radio" id={item.text + item.D} name={item.text} value={item.A}/>
+                        <input type="radio" id={item.text + item.D} name={item.text} value={item.D}/>
                         <label for={item.text + item.D}>{item.D}</label>
                       </div>
                     </div>
@@ -68,17 +65,16 @@ function makeApiCall(selectedquiz, quiz, setquiz){
     }
 }
 
-const gradeQuiz = async (quiz, setgrade) =>{
+const gradeQuiz = async (quiz, setgrade, quizresponse) =>{
   async function postanswers(quiz){
-    const answer = {"responses" : "Red, Blue, Orange, Blue, Orange"}
+    //"Red, Blue, Orange, Blue, Orange"
+    const answer = {"responses" : quizresponse}
     let data = await fetch('http://localhost:8000/quiz/grade/'+quiz, {method: 'POST', headers:{'Content-Type': 'application/json'}, body: JSON.stringify(answer)})
     .then(response => {return response.json();})
     .catch(error => {console.error(error);});
-    console.log(data);
     return data;
 }
-  var returnlist = [];
-  let quizzes = await postanswers(quiz)
+  let quizzes = await postanswers(quiz);
   console.log(quizzes);
   setgrade(quizzes.score);
 }
@@ -90,15 +86,22 @@ function getQuizResult(isgraded, setgraded, quiz, selectedquiz, grade, setgrade)
   if(quiz == null){
     return
   }
-  for (let i = 0; i < quiz.length; i++) {
-    var elem = document.getElementsByName(quiz[i].text);
+  var jsonquiz = JSON.parse(quiz);
+  console.log(jsonquiz);
+  console.log(jsonquiz.quiz.length);
+  var quizresponses = "";
+  for (let i = 0; i < jsonquiz.quiz.length; i++) {
+    var elem = document.getElementsByName(jsonquiz.quiz[i].text);
+    //console.log(elem);
     for (let j = 0; j < elem.length; j++) {
       if(elem[j].checked){
-        console.log(elem[j]);
+        quizresponses = quizresponses + elem[j].value + ", ";
       }
     }
   }
-  gradeQuiz(selectedquiz, setgrade);
+  quizresponses = quizresponses.substring(0, quizresponses.length -2);
+  console.log(quizresponses);
+  gradeQuiz(selectedquiz, setgrade, quizresponses);
   document.getElementById("putresulthere").append("Score: "+grade+" %");
   setgraded(true);
   // Do another API call to get answers
