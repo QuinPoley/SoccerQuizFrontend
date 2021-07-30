@@ -75,12 +75,19 @@ const gradeQuiz = async (quiz, setgrade, quizresponse) =>{
     return data;
 }
   let quizzes = await postanswers(quiz);
-  console.log(quizzes);
+  if(quizzes == null){
+    setgrade(0);
+    return
+  }
+  quizzes = await JSON.parse(quizzes);
+  console.log(quizzes.score);
+  
+  console.log(quizzes.score);
   setgrade(quizzes.score);
 }
 
 function getQuizResult(isgraded, setgraded, quiz, selectedquiz, grade, setgrade){
-  if(isgraded){
+  if(isgraded && document.getElementById("putresulthere").firstChild != null){
     document.getElementById("putresulthere").firstChild.remove();
   }
   if(quiz == null){
@@ -102,12 +109,18 @@ function getQuizResult(isgraded, setgraded, quiz, selectedquiz, grade, setgrade)
   quizresponses = quizresponses.substring(0, quizresponses.length -2);
   console.log(quizresponses);
   gradeQuiz(selectedquiz, setgrade, quizresponses);
-  document.getElementById("putresulthere").append("Score: "+grade+" %");
+  console.log("we here");
   setgraded(true);
   // Do another API call to get answers
 }
 
 function Quiz({selectedquiz, isgraded, setgraded, quiz, setquiz, grade, setgrade}) {
+  useEffect(() => {
+    if(isgraded && document.getElementById("putresulthere").firstChild != null){
+      document.getElementById("putresulthere").firstChild.remove();
+    }
+    document.getElementById("putresulthere").append("Score: "+grade+" %");
+}, [grade]);
   const response = makeApiCall(selectedquiz, quiz, setquiz);
   return (
     <div className="questions">
@@ -142,9 +155,6 @@ function MakeQuizButton(){
   );
 }
 
-function handleNewQuiz(currentelement){
-  console.log("Hello from "+currentelement);
-}
 
 function DropDownList({quizzes, setactive, active, setgraded}){
   var map1 = quizzes.map(function(currentelement, index){return(<li key={index} onClick={() => setactive(currentelement) && setgraded(false)}>{currentelement}</li>)});
@@ -170,7 +180,7 @@ const [isgraded, setgraded] = useState(false);
 const [grade, setgrade] = useState('0');
 const [active, setactive] = useState(null); //quizlist[0]
 useEffect(() => {
-  if(isgraded){
+  if(isgraded && document.getElementById("putresulthere").firstChild != null){
     setgraded(false);
     document.getElementById("putresulthere").firstChild.remove()
   }

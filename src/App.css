@@ -176,6 +176,7 @@
 .result{
   color: white;
   position: relative;
+  width: 25%;
 }
 
 .App {
@@ -192,4 +193,5 @@
 .currentlyselected{
   color: white;
   position: relative;
+  width: 25%;
 }
